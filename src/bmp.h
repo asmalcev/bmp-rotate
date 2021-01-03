@@ -31,15 +31,15 @@ struct __attribute__((packed)) bmp_header
   FOR_BMP_HEADER(DECLARE_FIELD)
 };
 
-void bmp_header_print(struct bmp_header const *header, FILE *f);
+void bmp_header_print(struct bmp_header const *p_header, FILE *file);
 
 enum read_status read_bmp_from_file(
-    const char *filename,
-    struct bmp_header *header,
-    struct image *img);
-// enum write_status write_bmp_to_file(
-//     const char *filename,
-//     struct bmp_header *header,
-//     struct image *img);
+    FILE *file,
+    struct bmp_header *p_header,
+    struct image *p_img);
+enum write_status write_bmp_to_file(
+    FILE *file,
+    struct bmp_header const *p_header,
+    struct image const *p_img);
 
 #endif
