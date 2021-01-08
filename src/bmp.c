@@ -26,7 +26,7 @@ static enum read_status read_header(FILE *f, struct bmp_header *p_header)
   return !fread(p_header, sizeof(struct bmp_header), 1, f);
 }
 
-static enum write_status write_header(FILE *f, struct bmp_header *p_header)
+static enum write_status write_header(FILE *f, struct bmp_header const *p_header)
 {
   return !fwrite(p_header, sizeof(struct bmp_header), 1, f);
 }
@@ -91,22 +91,32 @@ enum read_status read_bmp_from_file(
 
 enum write_status write_bmp_to_file(
     FILE *file,
-    struct bmp_header *p_header,
     struct image *p_img)
 {
+  struct bmp_header header =
+  {
+    .bfType      = 19778,
+    .bOffBits    = sizeof(struct bmp_header),
+    .biWidth     = p_img->width,
+    .biHeight    = p_img->height,
+    .biPlanes    = 1,
+    .biBitCount  = sizeof(struct pixel) * 8,
+    .biSizeImage = p_img->height * p_img->width * sizeof(struct pixel)
+  };
+  header.biSize    = header.bOffBits - 14;
+  header.bfileSize = header.bOffBits + header.biSizeImage;
+
   if (!file)
   {
     return WRITE_ERROR;
   }
 
-  if (write_header(file, p_header))
+  if (write_header(file, &header))
   {
     err("Can't write header\n");
     return WRITE_ERROR;
   }
 
-  p_img->width  = p_header->biWidth;
-  p_img->height = p_header->biHeight;
   if (write_image(file, p_img))
   {
     err("Can't write image\n");

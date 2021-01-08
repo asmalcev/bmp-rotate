@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
     header.biWidth  = new_img.width;
     header.biHeight = new_img.height;
-    if (write_bmp_to_file(output, &header, &new_img))
+    if (write_bmp_to_file(output, &new_img))
     {
       fclose(input);
       fclose(output);
